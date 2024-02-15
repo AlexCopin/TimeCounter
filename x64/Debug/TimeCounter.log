@@ -1,3 +1,2 @@
 ﻿  TimeCounter.cpp
-D:\Alex\TimerCounter\TimeCounter\TimeCounter.cpp(169,31): warning C4018: '<': signed/unsigned mismatch
   TimeCounter.vcxproj -> D:\Alex\TimerCounter\TimeCounter\x64\Debug\TimeCounter.exe

@@ -158,41 +158,44 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_PAINT:
         {
+            CreateWindow(_T("EDIT"), 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 56, 50, 50, 18, hWnd, 0, hInst, 0);
+            auto temp = CreateWindow(_T("BUTTON"), 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 50, 100, 50, 18, hWnd, 0, hInst, 0);
+            
             TextManager* textManager = new TextManager();
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
 
             // TODO: Add any drawing code that uses hdc here...
-            DWORD aProcesses[1024], cbNeeded, cProcesses;
-            EnumProcesses(aProcesses, sizeof(aProcesses), &cbNeeded);
-            cProcesses = cbNeeded / sizeof(DWORD);
-            for (int i = 0; i < cProcesses; i++)
-            {
-              if (aProcesses[i] != 0)
-              {
-                HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, aProcesses[i]);
-                if (hProcess == NULL)
-                  continue;
-                TCHAR nameProc[MAX_PATH];
+            //DWORD aProcesses[1024], cbNeeded, cProcesses;
+            //EnumProcesses(aProcesses, sizeof(aProcesses), &cbNeeded);
+            //cProcesses = cbNeeded / sizeof(DWORD);
+            //for (int i = 0; i < cProcesses; i++)
+            //{
+            //  if (aProcesses[i] != 0)
+            //  {
+            //    HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, aProcesses[i]);
+            //    if (hProcess == NULL)
+            //      continue;
+            //    TCHAR nameProc[MAX_PATH];
 
-                //Test with GetProcessImageFileName
-                /*GetProcessImageFileName(hProcess, nameProc, sizeof(nameProc));
-                TCHAR s[256];
-                swprintf_s(s, _T("GetProcessImageFileName - Process' %d Name = %s \n"), i, nameProc);
-                OutputDebugString(s);*/
+            //    //Test with GetProcessImageFileName
+            //    /*GetProcessImageFileName(hProcess, nameProc, sizeof(nameProc));
+            //    TCHAR s[256];
+            //    swprintf_s(s, _T("GetProcessImageFileName - Process' %d Name = %s \n"), i, nameProc);
+            //    OutputDebugString(s);*/
 
-                //Test with GetModuleBaseName
-                HMODULE hMod;
-                if (EnumProcessModules(hProcess, &hMod, sizeof(hMod), &cbNeeded))
-                {
-                  GetModuleBaseName(hProcess, hMod, nameProc, sizeof(nameProc) / sizeof(TCHAR));
-                }
-                TCHAR bufferModuleBaseName[256];
-                swprintf_s(bufferModuleBaseName, _T("GetModuleBaseName - Process' %d Name = %s \n"), i, nameProc);
-                OutputDebugString(bufferModuleBaseName);
-                textManager->AddText(hdc, nameProc);
-              }
-            }
+            //    //Test with GetModuleBaseName
+            //    HMODULE hMod;
+            //    if (EnumProcessModules(hProcess, &hMod, sizeof(hMod), &cbNeeded))
+            //    {
+            //      GetModuleBaseName(hProcess, hMod, nameProc, sizeof(nameProc) / sizeof(TCHAR));
+            //    }
+            //    TCHAR bufferModuleBaseName[256];
+            //    swprintf_s(bufferModuleBaseName, _T("GetModuleBaseName - Process' %d Name = %s \n"), i, nameProc);
+            //    OutputDebugString(bufferModuleBaseName);
+            //    textManager->AddText(hdc, nameProc);
+            //  }
+            //}
 
             EndPaint(hWnd, &ps);
             delete textManager;
