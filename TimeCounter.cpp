@@ -4,6 +4,12 @@
 #include "framework.h"
 #include "TimeCounter.h"
 
+#include <iostream>
+#include <process.h>
+#include <Psapi.h>
+
+#include "TextManager.h"
+
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -25,9 +31,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-      // TODO: Place code here.
-
-
+    // TODO: Place code here.
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_TIMECOUNTER, szWindowClass, MAX_LOADSTRING);
@@ -97,15 +101,14 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // Store instance handle in our global variable
-
    HWND hWnd = CreateWindowW(
      szWindowClass, 
      szTitle,
-     WS_OVERLAPPEDWINDOW,
+     WS_OVERLAPPEDWINDOW | WS_VSCROLL,
      CW_USEDEFAULT, 
-     0,
+     CW_USEDEFAULT,
      CW_USEDEFAULT, 
-     0, 
+     CW_USEDEFAULT,
      nullptr, 
      nullptr, 
      hInstance, 
@@ -155,13 +158,44 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_PAINT:
         {
+            TextManager* textManager = new TextManager();
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
+
             // TODO: Add any drawing code that uses hdc here...
-            TCHAR greeting[] = _T("Hello ahah");
-            TextOut(hdc, 5, 5, greeting, _tcslen(greeting));
+            DWORD aProcesses[1024], cbNeeded, cProcesses;
+            EnumProcesses(aProcesses, sizeof(aProcesses), &cbNeeded);
+            cProcesses = cbNeeded / sizeof(DWORD);
+            for (int i = 0; i < cProcesses; i++)
+            {
+              if (aProcesses[i] != 0)
+              {
+                HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, aProcesses[i]);
+                if (hProcess == NULL)
+                  continue;
+                TCHAR nameProc[MAX_PATH];
+
+                //Test with GetProcessImageFileName
+                /*GetProcessImageFileName(hProcess, nameProc, sizeof(nameProc));
+                TCHAR s[256];
+                swprintf_s(s, _T("GetProcessImageFileName - Process' %d Name = %s \n"), i, nameProc);
+                OutputDebugString(s);*/
+
+                //Test with GetModuleBaseName
+                HMODULE hMod;
+                if (EnumProcessModules(hProcess, &hMod, sizeof(hMod), &cbNeeded))
+                {
+                  GetModuleBaseName(hProcess, hMod, nameProc, sizeof(nameProc) / sizeof(TCHAR));
+                }
+                TCHAR bufferModuleBaseName[256];
+                swprintf_s(bufferModuleBaseName, _T("GetModuleBaseName - Process' %d Name = %s \n"), i, nameProc);
+                OutputDebugString(bufferModuleBaseName);
+                textManager->AddText(hdc, nameProc);
+              }
+            }
 
             EndPaint(hWnd, &ps);
+            delete textManager;
         }
         break;
     case WM_DESTROY:

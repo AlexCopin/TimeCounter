@@ -108,6 +108,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -130,9 +132,11 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TextManager.h" />
     <ClInclude Include="TimeCounter.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="TextManager.cpp" />
     <ClCompile Include="TimeCounter.cpp" />
   </ItemGroup>
   <ItemGroup>
